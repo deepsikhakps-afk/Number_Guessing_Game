@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Guess the Number</title>
+<style>
+  :root{
+    --bg1:#1b0e2e;
+    --bg2:#0d1b2e;
+    --accent:#ff5ec4;
+    --accent2:#3ee6c4;
+    --text:#f2eaff;
+    --muted:#a99bcf;
+    --card:rgba(255,255,255,0.06);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Trebuchet MS', 'Segoe UI', sans-serif;
+    background:radial-gradient(circle at 20% 20%, var(--bg1), var(--bg2) 70%);
+    color:var(--text);
+    overflow:hidden;
+    position:relative;
+  }
+  .stars{
+    position:absolute;
+    inset:0;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+      radial-gradient(2px 2px at 140px 80px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 90px 160px, #fff, transparent),
+      radial-gradient(2px 2px at 200px 220px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 260px 40px, #fff, transparent),
+      radial-gradient(2px 2px at 320px 140px, #fff, transparent);
+    background-repeat:repeat;
+    background-size:360px 260px;
+    opacity:0.35;
+    animation:drift 60s linear infinite;
+  }
+  @keyframes drift{
+    from{background-position:0 0;}
+    to{background-position:-360px 260px;}
+  }
+  .card{
+    position:relative;
+    z-index:1;
+    width:min(420px, 90vw);
+    padding:36px 32px 32px;
+    border-radius:24px;
+    background:var(--card);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.12);
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    text-align:center;
+  }
+  h1{
+    margin:0 0 4px;
+    font-size:1.8rem;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    letter-spacing:0.5px;
+  }
+  p.subtitle{
+    margin:0 0 24px;
+    color:var(--muted);
+    font-size:0.9rem;
+  }
+  .range{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:20px;
+  }
+  .range button{
+    padding:8px 14px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,0.15);
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    font-size:0.8rem;
+    transition:all 0.2s ease;
+  }
+  .range button.active{
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    color:#160821;
+    border-color:transparent;
+    font-weight:bold;
+  }
+  .gauge-wrap{
+    margin:0 auto 20px;
+    width:180px;
+    height:180px;
+    position:relative;
+  }
+  .gauge-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .gauge-bg{fill:none;stroke:rgba(255,255,255,0.08);stroke-width:12;}
+  .gauge-fg{
+    fill:none;
+    stroke:url(#grad);
+    stroke-width:12;
+    stroke-linecap:round;
+    transition:stroke-dashoffset 0.5s ease;
+  }
+  .gauge-center{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .gauge-center .num{font-size:2.2rem;font-weight:bold;}
+  .gauge-center .label{font-size:0.7rem;color:var(--muted);letter-spacing:1px;}
+  .input-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  input[type=number]{
+    flex:1;
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    font-size:1rem;
+    outline:none;
+    transition:border-color 0.2s ease, transform 0.15s ease;
+  }
+  input[type=number]:focus{
+    border-color:var(--accent2);
+  }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+  }
+  button.guess-btn{
+    padding:12px 22px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    color:#160821;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:1rem;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  button.guess-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(255,94,196,0.35);
+  }
+  button.guess-btn:active{transform:translateY(0);}
+  .feedback{
+    min-height:44px;
+    font-size:1.05rem;
+    font-weight:bold;
+    margin-bottom:10px;
+    transition:transform 0.15s ease;
+  }
+  .feedback.shake{animation:shake 0.35s ease;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-8px);}
+    40%{transform:translateX(8px);}
+    60%{transform:translateX(-6px);}
+    80%{transform:translateX(6px);}
+  }
+  .too-high{color:#ff8fb1;}
+  .too-low{color:#8fd4ff;}
+  .win{color:#7dffcd;}
+  .stats{
+    display:flex;
+    justify-content:space-between;
+    color:var(--muted);
+    font-size:0.8rem;
+    margin-bottom:16px;
+  }
+  .history{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    justify-content:center;
+    margin-bottom:20px;
+    min-height:28px;
+  }
+  .chip{
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:0.75rem;
+    background:rgba(255,255,255,0.08);
+  }
+  .chip.hi{color:#ff8fb1;}
+  .chip.lo{color:#8fd4ff;}
+  .chip.hit{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#160821;font-weight:bold;}
+  .new-game{
+    width:100%;
+    padding:12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.15);
+    background:transparent;
+    color:var(--text);
+    cursor:pointer;
+    font-size:0.9rem;
+    transition:background 0.2s ease;
+  }
+  .new-game:hover{background:rgba(255,255,255,0.08);}
+  .confetti{
+    position:fixed;
+    top:-10px;
+    width:8px;
+    height:14px;
+    opacity:0.9;
+    animation:fall linear forwards;
+    z-index:5;
+  }
+  @keyframes fall{
+    to{transform:translateY(110vh) rotate(360deg);opacity:0.4;}
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="card">
+  <h1>Guess the Number</h1>
+  <p class="subtitle">Pick a range, then hunt it down</p>
+
+  <div class="range" id="rangeButtons">
+    <button data-max="50">1–50</button>
+    <button data-max="100" class="active">1–100</button>
+    <button data-max="500">1–500</button>
+  </div>
+
+  <div class="gauge-wrap">
+    <svg viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ff5ec4"/>
+          <stop offset="100%" stop-color="#3ee6c4"/>
+        </linearGradient>
+      </defs>
+      <circle class="gauge-bg" cx="50" cy="50" r="42"/>
+      <circle class="gauge-fg" id="gaugeFg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/>
+    </svg>
+    <div class="gauge-center">
+      <div class="num" id="attemptsLeftNum">10</div>
+      <div class="label">TRIES LEFT</div>
+    </div>
+  </div>
+
+  <div class="input-row">
+    <input type="number" id="guessInput" placeholder="Enter your guess">
+    <button class="guess-btn" id="guessBtn">Guess</button>
+  </div>
+
+  <div class="feedback" id="feedback">Range is 1–100. Good luck!</div>
+
+  <div class="stats">
+    <span id="rangeLabel">Range: 1–100</span>
+    <span id="attemptCount">Attempts: 0</span>
+  </div>
+
+  <div class="history" id="history"></div>
+
+  <button class="new-game" id="newGameBtn">🔄 New Game</button>
+</div>
+
+<script>
+  let maxRange = 100;
+  let target = 0;
+  let attempts = 0;
+  let maxAttempts = 10;
+  let low = 1, high = maxRange;
+  let over = false;
+
+  const guessInput = document.getElementById('guessInput');
+  const guessBtn = document.getElementById('guessBtn');
+  const feedback = document.getElementById('feedback');
+  const attemptCount = document.getElementById('attemptCount');
+  const rangeLabel = document.getElementById('rangeLabel');
+  const history = document.getElementById('history');
+  const newGameBtn = document.getElementById('newGameBtn');
+  const rangeButtons = document.getElementById('rangeButtons');
+  const gaugeFg = document.getElementById('gaugeFg');
+  const attemptsLeftNum = document.getElementById('attemptsLeftNum');
+  const CIRC = 264;
+
+  function computeMaxAttempts(max){
+    return Math.max(6, Math.ceil(Math.log2(max)) + 2);
+  }
+
+  function startGame(){
+    target = Math.floor(Math.random() * maxRange) + 1;
+    attempts = 0;
+    over = false;
+    low = 1; high = maxRange;
+    maxAttempts = computeMaxAttempts(maxRange);
+    attemptCount.textContent = `Attempts: 0`;
+    rangeLabel.textContent = `Range: 1–${maxRange}`;
+    feedback.className = 'feedback';
+    feedback.textContent = `Range is 1–${maxRange}. Good luck!`;
+    history.innerHTML = '';
+    guessInput.value = '';
+    guessInput.min = 1;
+    guessInput.max = maxRange;
+    guessInput.disabled = false;
+    guessBtn.disabled = false;
+    updateGauge();
+    guessInput.focus();
+  }
+
+  function updateGauge(){
+    const left = Math.max(maxAttempts - attempts, 0);
+    attemptsLeftNum.textContent = left;
+    const ratio = left / maxAttempts;
+    gaugeFg.style.strokeDashoffset = CIRC - CIRC * ratio;
+  }
+
+  function addChip(value, type){
+    const chip = document.createElement('span');
+    chip.className = 'chip ' + type;
+    chip.textContent = value;
+    history.appendChild(chip);
+  }
+
+  function launchConfetti(){
+    const colors = ['#ff5ec4','#3ee6c4','#ffd166','#a685ff'];
+    for(let i=0;i<40;i++){
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      el.style.left = Math.random()*100 + 'vw';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.animationDuration = (2 + Math.random()*1.5) + 's';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(), 3600);
+    }
+  }
+
+  function shakeFeedback(){
+    feedback.classList.remove('shake');
+    void feedback.offsetWidth;
+    feedback.classList.add('shake');
+  }
+
+  function makeGuess(){
+    if(over) return;
+    const val = parseInt(guessInput.value, 10);
+    if(isNaN(val) || val < 1 || val > maxRange){
+      feedback.className = 'feedback too-high';
+      feedback.textContent = `Enter a number between 1 and ${maxRange}`;
+      shakeFeedback();
+      return;
+    }
+    attempts++;
+    attemptCount.textContent = `Attempts: ${attempts}`;
+    updateGauge();
+
+    if(val === target){
+      feedback.className = 'feedback win';
+      feedback.textContent = `🎉 Correct! It was ${target}. Solved in ${attempts} ${attempts===1?'try':'tries'}!`;
+      addChip(val, 'hit');
+      over = true;
+      guessInput.disabled = true;
+      guessBtn.disabled = true;
+      launchConfetti();
+      return;
+    }
+
+    if(val > target){
+      feedback.className = 'feedback too-high';
+      feedback.textContent = `📉 Too high! Try lower.`;
+      addChip(val, 'hi');
+      shakeFeedback();
+      if(val < high) high = val;
+    } else {
+      feedback.className = 'feedback too-low';
+      feedback.textContent = `📈 Too low! Try higher.`;
+      addChip(val, 'lo');
+      shakeFeedback();
+      if(val > low) low = val;
+    }
+
+    guessInput.placeholder = `Try between ${low} and ${high}`;
+    guessInput.value = '';
+
+    if(attempts >= maxAttempts){
+      feedback.className = 'feedback too-high';
+      feedback.textContent = `💥 Out of tries! The number was ${target}.`;
+      over = true;
+      guessInput.disabled = true;
+      guessBtn.disabled = true;
+    }
+    guessInput.focus();
+  }
+
+  guessBtn.addEventListener('click', makeGuess);
+  guessInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') makeGuess();
+  });
+  newGameBtn.addEventListener('click', startGame);
+
+  rangeButtons.addEventListener('click', (e)=>{
+    if(e.target.tagName !== 'BUTTON') return;
+    [...rangeButtons.children].forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active');
+    maxRange = parseInt(e.target.dataset.max, 10);
+    startGame();
+  });
+
+  startGame();
+</script>
+</body>
+</html>
