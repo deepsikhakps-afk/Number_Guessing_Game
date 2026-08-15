@@ -12,7 +12,7 @@ A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 ## Technologies Used
 - HTML  # for structure 
 - CSS   # for designing
-- JavaScript
+- JavaScript # for interactivity
 
 ## How to Play
 1. Enter a number.
