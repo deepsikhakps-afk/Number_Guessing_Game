@@ -10,7 +10,7 @@ A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 - Restart game option
 
 ## Technologies Used
-- HTML
+- HTML  # for structure 
 - CSS
 - JavaScript
 
