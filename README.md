@@ -11,7 +11,7 @@ A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 
 ## Technologies Used
 - HTML  # for structure 
-- CSS
+- CSS   # for designing
 - JavaScript
 
 ## How to Play
