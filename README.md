@@ -21,6 +21,7 @@ A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 4. Restart and play again.
 
 # Screenshots
+![alt text](image-1.png)
 
 ## Author
 Deepsikha Singh
