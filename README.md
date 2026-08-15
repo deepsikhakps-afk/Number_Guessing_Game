@@ -20,7 +20,7 @@ A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 3. Receive hints until you guess the correct number.
 4. Restart and play again.
 
-# 
+# Screenshots
 
 ## Author
 Deepsikha Singh
