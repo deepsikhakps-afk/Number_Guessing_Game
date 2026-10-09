@@ -18,7 +18,7 @@ A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 1. Enter a number.
 2. Click the **Guess** button.
 3. Receive hints until you guess the correct number.
-4. Restart and play .
+4. Restart and play again.
 
 # Screenshots
 ![alt text](image-1.png)
