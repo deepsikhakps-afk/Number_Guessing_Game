@@ -5,7 +5,7 @@ A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 ## Features
 - Random number generation
 - User-friendly interface
-- Hint messages (Tgh / Too Low)
+- Hint messages (Too High / Too Low)
 - Tracks user attempts
 - Restart game option
 
