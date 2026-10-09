@@ -7,7 +7,7 @@ A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 - User-friendly interface
 - Hint messages (Too High / Too Low)
 - Tracks user attempts
-- Restart game 
+- Restart game option
 
 ## Technologies Used
 - HTML  # for structure 
