@@ -3,7 +3,8 @@
 A simple web-based Number Guess Game built using HTML, CSS, and JavaScript.
 
 ## Features
-- Random number 
+- Random number generation
+- User-friendly interface
 - Hint messages 
 - Tracks user attempts
 - Restart game option
